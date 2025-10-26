@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools — Tracker, Affirmations, CTA</title>
+<style>
+  :root{
+    --bg:#ffffff; --ink:#1a1a1a; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#0ea5e9; --radius:14px;
+  }
+  html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;}
+  *{box-sizing:border-box}
+  header{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:10}
+  .tab{padding:8px 12px;border:1px solid var(--line);border-bottom:none;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);background:#fafafa;cursor:pointer;font-weight:700}
+  .tab[aria-selected="true"]{background:#fff}
+  .note{color:var(--muted);font-size:12px;margin-left:6px}
+  .view{display:none;padding:12px} .view.active{display:block}
+  .title{font-size:22px;font-weight:800;margin:6px 0 12px}
+  .phase{border:1px solid var(--line);border-radius:var(--radius);padding:12px;background:#fff;margin-bottom:14px}
+  .phase h3{margin:0 0 8px}
+  table{width:100%;border-collapse:collapse;margin-top:4px}
+  th,td{border:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}
+  th{background:#f7f8fb}
+  textarea{width:100%;min-height:80px;border:1px dashed var(--line);border-radius:10px;padding:8px;resize:vertical;background:transparent;color:var(--ink)}
+  select{padding:6px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink)}
+  .barwrap{display:flex;align-items:center;gap:8px;margin:10px 0}
+  .meter{flex:1;height:10px;background:#f1f5f9;border-radius:999px;border:1px solid var(--line);overflow:hidden}
+  .bar{height:100%;width:0%;background:var(--accent)}
+  .pct{font-size:12px;color:var(--muted);min-width:48px;text-align:right}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .smallbtn{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#f8f9fb;color:var(--ink);cursor:pointer;font-weight:600}
+  iframe.embed{width:100%;height:70vh;border:0;border:1px solid var(--line);border-radius:12px}
+  .cta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width: 980px){
+    .cta-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <button class="tab" id="tab-trk" aria-selected="true">30/60/90 Tracker</button>
+    <button class="tab" id="tab-aff" aria-selected="false">Affirmations</button>
+    <button class="tab" id="tab-cta" aria-selected="false">My call to action</button>
+    <span class="note">Tracker mirrors your reference; Affirmations embed your file; CTA lets you write 3 action lists.</span>
+  </header>
+
+  <section id="view-trk" class="view active">
+    <div class="title">30/60/90 Tracker</div>
+    <div class="barwrap">
+      <div class="meter"><div class="bar" id="overallBar"></div></div>
+      <div class="pct" id="overallPct">0%</div>
+    </div>
+    <div class="actions">
+      <button class="smallbtn" id="exportCSV">Export Tracker (CSV)</button>
+      <button class="smallbtn" id="clearData">Clear Notes/Status</button>
+    </div>
+    <div id="phases"></div>
+  </section>
+
+  <section id="view-aff" class="view">
+    <iframe class="embed" src="affirmations_21day_simple_checklist%20(1).html" title="21-Day Affirmations"></iframe>
+  </section>
+
+  <section id="view-cta" class="view">
+    <div class="title">My call to action</div>
+    <p style="color: var(--muted); max-width: 1000px;">
+      Build your action plan based on the insight that you have gained over the reflections and play that you have done until now.
+      Use the boxes below to capture the next steps you will <strong>continue</strong>, <strong>start</strong>, and <strong>stop</strong>.
+    </p>
+    <div class="cta-grid">
+      <div class="phase">
+        <h3>To be continued</h3>
+        <textarea id="cta-continue" placeholder="List the actions/habits you will continue…"></textarea>
+      </div>
+      <div class="phase">
+        <h3>To be started</h3>
+        <textarea id="cta-start" placeholder="List the actions/initiatives you will start…"></textarea>
+      </div>
+      <div class="phase">
+        <h3>To be stopped</h3>
+        <textarea id="cta-stop" placeholder="List the actions/habits you will stop…"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="smallbtn" id="cta-export">Export Actions (TXT)</button>
+      <button class="smallbtn" id="cta-clear">Clear Actions</button>
+    </div>
+  </section>
+
+<script>
+// --- Simple tracker (same as earlier simplified version) ---
+const KEY='simple_tracker_v1';
+function load(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}} }
+function save(s){ localStorage.setItem(KEY, JSON.stringify(s)); }
+let STATE=load();
+
+const TRACKER = {
+  "30-Day Initiate":[
+    ["Play 1 – Build Credibility","Identify 3 deliverables where results can be quantified.","Metrics or testimonials linked to outcomes."],
+    ["Play 1 – Build Credibility","Start a “Credibility File” (emails, screenshots, feedback).","Repository created."],
+    ["Play 2 – Convert Ideas","Pick one recurring idea — rewrite it as a SMART plan.","SMART checklist complete."],
+    ["Play 3 – Tell Stories","Identify a project where numbers are under-used.","Short list of relevant KPIs."],
+    ["Play 4 – Reset Role","Spot 1 blind spot outside your formal scope.","Issue defined and owner identified."],
+    ["Play 5 – Reveal Strengths","Identify 2 strengths others appreciate in you.","Peer input collected."]
+  ],
+  "60-Day Embed":[
+    ["Play 1 – Build Credibility","Record weekly small wins.","6–8 small wins logged."],
+    ["Play 2 – Convert Ideas","Execute plan with metrics & deadlines.","Data/progress report available."],
+    ["Play 3 – Tell Stories","Reframe data into a short story (Then→Now→Impact).","2–3 slides or a short narrative."],
+    ["Play 4 – Reset Role","Take a step to address a blind spot.","Pilot improvement visible."],
+    ["Play 5 – Reveal Strengths","Map strengths to business value.","Value-mapping document."]
+  ],
+  "90-Day Sustain":[
+    ["Play 1 – Build Credibility","Present a Proof-of-Impact summary.","Dashboard/narrative shared."],
+    ["Play 2 – Convert Ideas","Showcase measurable outcome.","Metrics summary note."],
+    ["Play 3 – Tell Stories","Present your story; gather reactions.","Peer/manager quotes."],
+    ["Play 4 – Reset Role","Share impact; propose role enhancement.","New responsibility acknowledged."],
+    ["Play 5 – Reveal Strengths","Share one strength story publicly.","Recognition/adoption by others."]
+  ]
+};
+
+const phasesEl=document.getElementById('phases');
+function buildPhases(){
+  phasesEl.innerHTML='';
+  Object.keys(TRACKER).forEach(function(phaseName){
+    const phase=document.createElement('div'); phase.className='phase';
+    const h3=document.createElement('h3'); h3.textContent=phaseName; phase.appendChild(h3);
+    const table=document.createElement('table');
+    const thead=document.createElement('thead'); const trh=document.createElement('tr');
+    ['Play','Workplace Task','Expected Output / Proof','Progress Notes','Status (🟢/🟡/🔴)'].forEach(function(h){
+      const th=document.createElement('th'); th.textContent=h; trh.appendChild(th);
+    });
+    thead.appendChild(trh); table.appendChild(thead);
+    const tbody=document.createElement('tbody');
+
+    TRACKER[phaseName].forEach(function(row,idx){
+      const tr=document.createElement('tr');
+      const play=row[0], task=row[1], proof=row[2];
+      [play,task,proof].forEach(function(tx){ const td=document.createElement('td'); td.textContent=tx; tr.appendChild(td); });
+
+      const tdN=document.createElement('td');
+      const ta=document.createElement('textarea');
+      const notesKey=phaseName+':'+idx+':notes';
+      ta.value=STATE[notesKey]||'';
+      ta.addEventListener('input',function(){ STATE[notesKey]=ta.value; save(STATE); });
+      tdN.appendChild(ta); tr.appendChild(tdN);
+
+      const tdS=document.createElement('td');
+      const sel=document.createElement('select');
+      ['','🟢 Achieved','🟡 In Progress','🔴 Stalled'].forEach(function(v){ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+      const statusKey=phaseName+':'+idx+':status';
+      sel.value=STATE[statusKey]||'';
+      sel.addEventListener('change',function(){ STATE[statusKey]=sel.value; save(STATE); calcOverall(); });
+      tdS.appendChild(sel); tr.appendChild(tdS);
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    phase.appendChild(table);
+    phasesEl.appendChild(phase);
+  });
+}
+
+function calcOverall(){
+  let total=0, green=0;
+  Object.keys(TRACKER).forEach(function(phase){
+    TRACKER[phase].forEach(function(_,idx){
+      total++;
+      const st=STATE[phase+':'+idx+':status']||'';
+      if(st.indexOf('Achieved')!==-1) green++;
+    });
+  });
+  const pct = total? Math.round((green/total)*100):0;
+  document.getElementById('overallBar').style.width=pct+'%';
+  document.getElementById('overallPct').textContent=pct+'%';
+}
+
+// --- CTA persistence ---
+const CTA_KEY='simple_tracker_cta_v1';
+function ctaLoad(){ try{return JSON.parse(localStorage.getItem(CTA_KEY)||'{}')}catch(e){return {}} }
+function ctaSave(s){ localStorage.setItem(CTA_KEY, JSON.stringify(s)); }
+let CTA_STATE = ctaLoad();
+function bindCTA(){
+  ['cta-continue','cta-start','cta-stop'].forEach(function(id){
+    const el=document.getElementById(id); if(!el) return;
+    el.value = CTA_STATE[id]||'';
+    el.addEventListener('input', function(){ CTA_STATE[id]=el.value; ctaSave(CTA_STATE); });
+  });
+  const exportBtn=document.getElementById('cta-export');
+  if(exportBtn){
+    exportBtn.addEventListener('click', function(){
+      const txt = [
+        'My Call To Action',
+        '',
+        'To be continued:',
+        CTA_STATE['cta-continue']||'',
+        '',
+        'To be started:',
+        CTA_STATE['cta-start']||'',
+        '',
+        'To be stopped:',
+        CTA_STATE['cta-stop']||''
+      ].join('\n');
+      const blob=new Blob([txt],{type:'text/plain'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='my_call_to_action.txt'; a.click();
+    });
+  }
+  const clearBtn=document.getElementById('cta-clear');
+  if(clearBtn){
+    clearBtn.addEventListener('click', function(){
+      if(!confirm('Clear the action plan text boxes?')) return;
+      CTA_STATE={}; ctaSave(CTA_STATE);
+      ['cta-continue','cta-start','cta-stop'].forEach(function(id){
+        const el=document.getElementById(id); if(el) el.value='';
+      });
+    });
+  }
+}
+
+// Tabs
+const tabTrk=document.getElementById('tab-trk');
+const tabAff=document.getElementById('tab-aff');
+const tabCTA=document.getElementById('tab-cta');
+const vTrk=document.getElementById('view-trk');
+const vAff=document.getElementById('view-aff');
+const vCTA=document.getElementById('view-cta');
+function setSel(el, on){ el && el.setAttribute('aria-selected', on?'true':'false'); }
+function show(el, on){ el && el.classList.toggle('active', on); }
+function activate(which){
+  const isTrk = which==='trk';
+  const isAff = which==='aff';
+  const isCTA = which==='cta';
+  setSel(tabTrk, isTrk); setSel(tabAff, isAff); setSel(tabCTA, isCTA);
+  show(vTrk, isTrk); show(vAff, isAff); show(vCTA, isCTA);
+}
+
+tabTrk.addEventListener('click', function(){ activate('trk'); });
+tabAff.addEventListener('click', function(){ activate('aff'); });
+tabCTA.addEventListener('click', function(){ activate('cta'); });
+
+// Init
+buildPhases(); calcOverall(); bindCTA(); activate('trk');
+</script>
+</body>
+</html>

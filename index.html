@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Bold Leader’s Reflection Journal – Prototype Hub</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --card: #121a33;
+    --text: #e9eef9;
+    --accent: #7aa2ff;
+    --border: #24346a;
+    --hover: #1b2550;
+  }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    color: var(--text);
+    background: radial-gradient(1200px 800px at 20% 0%, #111b3a 0%, var(--bg) 40%, #090e1a 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px;
+  }
+  h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+    color: #dbe6ff;
+  }
+  p.subtitle {
+    color: #a9b6e6;
+    margin-bottom: 28px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    width: min(1000px, 96vw);
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    transition: background 0.2s, transform 0.15s ease;
+    text-align: center;
+  }
+  .card:hover {
+    background: var(--hover);
+    transform: translateY(-3px);
+  }
+  a {
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .card h2 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 14px;
+    color: #a9b6e6;
+    margin-bottom: 14px;
+  }
+  .btn {
+    display: inline-block;
+    background: linear-gradient(90deg, #3658ff, #7aa2ff);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  footer {
+    margin-top: 40px;
+    font-size: 13px;
+    color: #6e7ba5;
+  }
+</style>
+<style>
+/* --- Preface Overlay (non-intrusive) --- */
+#preface-overlay{
+  position:fixed; inset:0; z-index:99999;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg, rgba(17,24,39,0.88), rgba(17,24,39,0.88));
+  color:#111827;
+  font-family:inherit;
+}
+#preface-card{
+  width:min(920px, 92vw);
+  background:#ffffff;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+  padding:28px;
+}
+#preface-card h1{
+  margin:0 0 8px 0;
+  font-size:28px; font-weight:900; letter-spacing:.3px; color:#111827;
+}
+#preface-card h2{
+  margin:10px 0 14px 0;
+  font-size:18px; font-weight:800; letter-spacing:.2px; color:#111827;
+}
+#preface-card .preface-body{
+  white-space:pre-wrap; line-height:1.6; color:#1f2937; font-size:16px;
+}
+#preface-actions{ display:flex; justify-content:flex-end; margin-top:18px }
+#preface-continue{
+  border:0; background:#111827; color:#fff; font-weight:800; border-radius:12px;
+  padding:10px 14px; cursor:pointer;
+}
+#preface-continue:focus-visible{ outline:3px solid #111827; outline-offset:2px }
+@media (max-width:600px){
+  #preface-card{ padding:18px }
+  #preface-card h1{ font-size:22px }
+  #preface-card .preface-body{ font-size:15px }
+}
+
+/* --- Tools button + modal --- */
+.btn.btn-tools {
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  padding: 6px 10px;
+  font-size: 13px;
+  margin-left: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn.btn-tools:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+#tools-modal{
+  position:fixed; inset:0; z-index:99990;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.6);
+}
+#tools-box{
+  width:min(960px, 96vw); height:min(80vh, 720px);
+  background:#0b1020; border:1px solid #24346a; border-radius:14px;
+  box-shadow:0 16px 40px rgba(0,0,0,.45); overflow:hidden; display:flex; flex-direction:column;
+}
+#tools-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 12px; background:#121a33; border-bottom:1px solid #24346a;
+  color:#e9eef9; font-weight:700;
+}
+#tools-close{
+  background:#fff; color:#111; border:0; border-radius:8px; padding:6px 10px; cursor:pointer; font-weight:700;
+}
+#tools-iframe{
+  flex:1; width:100%; height:100%; border:0; background:#0b1020;
+}
+
+</style></head>
+<body><div id="preface-overlay"><div id="preface-card"><h1>PREFACE</h1><h2>This combined Edition</h2><div class="preface-body">This combined Edition brings together Reflection Journal – A self-discovery work book and The Bold Leaders’s Playbook- guiding from inner clarity to bold external movement. The journal invites you to pause, reflect and capture your thoughts. The playbook then helps you convers those reflections into decisive actions and measurable results.
+Together, they are designed to accompany you on a journey of self-discovery and leadership growth.
+✨ How to Use This Journal
+This is your private space — honesty matters more than perfection.
+•	Use it to surface challenges, explore your thought process, test your reality, and reframe thinking toward results. 
+•	It works because you own it — both the plan you craft and the actions you take.
+•	This is not about collecting more information — it’s about creating active transformation.
+Remember: “A small shift in thinking can create a big shift in results.”</div><div id="preface-actions"><button id="preface-continue">Continue →</button></div></div></div>
+<h1>🌟 Bold Leader’s Reflection Journal</h1>
+<p class="subtitle">Explore each interactive section and playbook prototype below</p>
+<div class="grid">
+<div class="card">
+<h2>Section 1 – Starting Reflection</h2>
+<p>Unlock yourself: Map spark, barrier, and first move.</p>
+<a class="btn" href="section1_starting_reflection_final.html.html" target="_blank">Launch Section 1</a>
+</div>
+<div class="card">
+<h2>Section 2 – Accountability</h2>
+<p>Who owns my movement? Map responsibility neutrally and clarify next steps.</p>
+<a class="btn" href="section2_accountability_corrected.html" target="_blank">Launch Section 2</a>
+</div>
+<div class="card">
+<h2>Section 3 – External Signals</h2>
+<p>How do others see me? Build awareness of credibility and perception.</p>
+<a class="btn" href="section3_external_signals_fixed.html" target="_blank">Launch Section 3</a>
+</div>
+<div class="card">
+<h2>Section 4 – Movement &amp; Responsibility</h2>
+<p>Anchor small, visible actions that build readiness and forward flow.</p>
+<a class="btn" href="section4_movement_responsibility_aligned.html" target="_blank">Launch Section 4</a>
+</div>
+<div class="card">
+<h2>Section 5 – Final Reflection</h2>
+<p>Return to self and close strong. Capture your anchor note for continuity.</p>
+<a class="btn" href="section5_final_reflection_mirrored_v2.html" target="_blank">Launch Section 5</a>
+</div>
+<div class="card">
+<h2>Prototype: Bold Leader’s Playbook</h2>
+<p>All five plays for credibility, ideas, storytelling, role reset, and hidden strengths.</p>
+<a class="btn" href="bold_playbook_with_intro_v10_clean_export.html.html" target="_blank">Open Prototype</a>
+  <button class="btn btn-tools" id="open-tools" type="button" title="Open Tools">Tools</button>
+<!-- Community & Feedback Buttons -->
+<div style="text-align:center; margin-top:20px;">
+  <a class="btn" href="https://www.linkedin.com/groups/15557036/" target="_blank" 
+     style="background:linear-gradient(90deg,#0077b5,#00a0dc); margin:6px; font-size:14px; padding:6px 12px; border-radius:8px;">
+    🔗 Join the LinkedIn Community
+  </a>
+  <a class="btn" href="https://docs.google.com/forms/d/14heMhZUHjkvwTBWKLvgQS2wwVxyXBztpZedMDu_plcQ/edit?pli=1" target="_blank" 
+     style="background:linear-gradient(90deg,#34a853,#81c995); margin:6px; font-size:14px; padding:6px 12px; border-radius:8px;">
+    📝 Feedback Survey
+  </a>
+</div>
+</div>
+</div>
+<footer>© 2025 Vidhur Talent Synergy Solutions · Prototype Test Hub</footer>
+<script>
+(function(){
+  var btn = document.getElementById('preface-continue');
+  if(btn){
+    btn.addEventListener('click', function(){
+      var ov = document.getElementById('preface-overlay');
+      if(ov) ov.parentNode.removeChild(ov);
+    });
+  }
+})();</script><script>
+(function(){
+  // Create Back button
+  const backBtn = document.createElement('button');
+  backBtn.textContent = '← Back to Preface';
+  backBtn.style.position = 'fixed';
+  backBtn.style.top = '16px';
+  backBtn.style.right = '16px';
+  backBtn.style.zIndex = '9998';
+  backBtn.style.padding = '8px 12px';
+  backBtn.style.borderRadius = '8px';
+  backBtn.style.border = '1px solid #ccc';
+  backBtn.style.background = '#fff';
+  backBtn.style.fontWeight = '600';
+  backBtn.style.cursor = 'pointer';
+  document.body.appendChild(backBtn);
+
+  // Preface recreation
+  function showPreface(){
+    const existing = document.getElementById('preface-overlay');
+    if(existing) existing.remove();
+    const ov = document.createElement('div');
+    ov.id = 'preface-overlay';
+    ov.style.position='fixed';
+    ov.style.inset='0';
+    ov.style.background='linear-gradient(180deg, rgba(17,24,39,0.88), rgba(17,24,39,0.88))';
+    ov.style.zIndex='99999';
+    ov.style.display='flex';
+    ov.style.alignItems='center';
+    ov.style.justifyContent='center';
+    const card = document.createElement('div');
+    card.id = 'preface-card';
+    card.style.width='min(920px,92vw)';
+    card.style.background='#fff';
+    card.style.borderRadius='16px';
+    card.style.boxShadow='0 20px 40px rgba(0,0,0,.25)';
+    card.style.padding='28px';
+    card.innerHTML = `<h1>PREFACE</h1><h2>This combined Edition</h2>
+    <div class='preface-body'>
+    This combined Edition brings together Reflection Journal – A self-discovery work book and The Bold Leaders’s Playbook- guiding from inner clarity to bold external movement. The journal invites you to pause, reflect and capture your thoughts. The playbook then helps you convers those reflections into decisive actions and measurable results.
+    Together, they are designed to accompany you on a journey of self-discovery and leadership growth.
+    ✨ How to Use This Journal
+    This is your private space — honesty matters more than perfection.
+    • Use it to surface challenges, explore your thought process, test your reality, and reframe thinking toward results.
+    • It works because you own it — both the plan you craft and the actions you take.
+    • This is not about collecting more information — it’s about creating active transformation.
+    Remember: “A small shift in thinking can create a big shift in results.”</div>
+    <div id='preface-actions'><button id='preface-continue'>Continue →</button></div>`;
+    ov.appendChild(card);
+    document.body.appendChild(ov);
+    document.getElementById('preface-continue').addEventListener('click', ()=> ov.remove());
+  }
+
+  backBtn.addEventListener('click', showPreface);
+})();</script>
+<div id="tools-modal" role="dialog" aria-modal="true" aria-labelledby="tools-title">
+  <div id="tools-box">
+    <div id="tools-header">
+      <span id="tools-title">🧰 Tools – 21‑Day Affirmations</span>
+      <button id="tools-close" type="button" aria-label="Close Tools">Close</button>
+    </div>
+    <iframe id="tools-iframe" src="tools_panel_with_cta%20%288%29.html"></iframe>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  var openBtn = document.getElementById('open-tools');
+  var modal = document.getElementById('tools-modal');
+  var closeBtn = document.getElementById('tools-close');
+
+  function openModal(){
+    if(modal){ modal.style.display='flex'; }
+  }
+  function closeModal(){
+    if(modal){ modal.style.display='none'; }
+  }
+  if(openBtn){ openBtn.addEventListener('click', openModal); }
+  if(closeBtn){ closeBtn.addEventListener('click', closeModal); }
+  if(modal){
+    modal.addEventListener('click', function(e){
+      if(e.target === modal){ closeModal(); }
+    });
+  }
+  // ESC to close
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeModal();
+  });
+})();
+</script>
+
+</body>
+</html>
