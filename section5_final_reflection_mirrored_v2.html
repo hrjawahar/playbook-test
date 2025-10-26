@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Section 5 — Final Reflection: Return to Self & Close Strong</title>
+<style>
+  :root{ --bg:#0b1020; --surface:#101737; --card:#121a33; --text:#e9eef9; --muted:#a6b2d7; --accent:#7aa2ff; --border:#24346a; }
+  *{box-sizing:border-box}
+  body{ margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text);
+        background: radial-gradient(1200px 800px at 20% 0%, #111b3a 0%, var(--bg) 40%, #090e1a 100%);
+        min-height:100dvh; display:grid; place-items:center; padding:22px; }
+  .app{ width:min(900px,96vw) }
+  .header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .brand{ font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#cbd9ff; font-size:12px }
+  .status{ font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#0f1630; color:#b9c8ff }
+  .status.online.saving{ color:#ffe7a1; border-color:#4c4b1c } .status.online.saved{ color:#b7ffe8; border-color:#275b50 } .status.offline{ color:#ffe0a3; border-color:#6b5b1e }
+  .titlebar{ background:linear-gradient(180deg, rgba(255,255,255,.035), transparent 30%), var(--surface);
+             border:1px solid var(--border); border-radius:16px; padding:12px 16px; display:flex; align-items:center; gap:12px; }
+  .titlebar strong{ color:#dbe6ff }
+  .card{ background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), radial-gradient(800px 400px at 90% -10%, rgba(124, 58, 237,.12), transparent 40%), var(--card);
+         border:1px solid var(--border); border-radius:18px; padding:22px 18px; box-shadow:0 10px 30px rgba(0,0,0,.35) }
+  .center{ text-align:center }
+  .nudge{ margin:10px 0 12px; padding:12px; border-radius:12px; border:1px dashed var(--border); background:#0e1634; color:#a9b6e6; font-size:14px; }
+  .prompt{ font-size:18px; margin:0 0 10px; color:#eef2ff }
+  textarea{ width:100%; min-height:140px; resize:vertical; padding:12px; border-radius:12px; border:1px solid #2a3b79; background:#0d1530; color:#e9eef9; font-size:15px; line-height:1.5; }
+  .hint{ font-size:12px; color:#9bb1ff; margin:6px 0 2px }
+  .keyword, .example{ font-size:12px; color:#b5c7ff; margin:2px 0 }
+  .keyword em, .example em { font-style:normal; color:#d9e2ff }
+  .bonus{ margin-top:10px; padding:10px; border-radius:12px; background:#0f1630; border:1px solid #23346a; font-size:13px; color:#cfe0ff; }
+  .bonus small{ display:block; color:#9fb0ee; margin-bottom:6px }
+  .hidden{ display:none }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; justify-content:center }
+  button{ appearance:none; border:none; cursor:pointer; padding:10px 14px; border-radius:12px; font-weight:600; font-size:14px;
+          background:#111a3a; color:#dbe6ff; border:1px solid var(--border);
+          transition:transform .05s ease, background .2s ease, border-color .2s ease; }
+  button.primary{ background:linear-gradient(90deg, #3658ff, #7aa2ff); border-color:transparent; color:white }
+  button.ghost{ background:transparent; border:1px dashed #3550a8; color:#96a7e9 }
+  button:disabled{ opacity:.55; cursor:not-allowed }
+  .toast{ position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+          background:#0f1630; border:1px solid var(--border); color:#cfe0ff; padding:10px 14px; border-radius:12px; display:none; }
+  .modalBackdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal{ width:min(640px, 96vw); background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--card);
+          border:1px solid var(--border); border-radius:18px; padding:22px; }
+  .chip{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; border:1px solid #213064; cursor:pointer; background:#0e193b; color:#cfe0ff; }
+  .chip.active{ outline:2px solid #7aa2ff; background:#142459 }
+  .movementHint{ font-size:12px; color:#9fb0ee; margin-top:4px }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="brand">Reflection Journal</div>
+      <div class="titlebar"><strong>Section 5</strong></div>
+      <div class="status online saved" id="statusPill">Saved ✓</div>
+    </div>
+
+    <div class="card center" id="titleScreen">
+      <h1 style="margin:4px 0 6px;">Final Reflection — Return to Self & Close Strong</h1>
+      <p style="color:#a9b6e6;margin:0;">Restore calm, reinforce agency, and close the loop with self-compassion and forward momentum.</p>
+      <div class="actions"><button class="primary" id="goWarmNudge">Start →</button></div>
+    </div>
+
+    <div class="card hidden" id="warmNudge">
+      <div class="nudge">
+        <div><strong>Close Strong:</strong> You’ve journeyed from <em>stuckness → responsibility → signals → action</em>. The real win is what you see in yourself now.</div>
+        <div style="margin-top:6px;">Frame: Consistency matters more than size — even a 2-minute action counts. Tone: Soft, supportive, future-oriented.</div>
+      </div>
+      <div class="actions"><button class="primary" id="startBtn">Continue →</button></div>
+    </div>
+
+    <div class="card hidden" id="screen">
+      <h1 class="prompt" id="promptText">Prompt</h1>
+      <textarea id="answer" placeholder="Type your reflection here..."></textarea>
+      <div class="hint" id="tipLine">Tip</div>
+      <div class="keyword" id="keywordLine"></div>
+      <div class="example" id="exampleLine"></div>
+      <div class="actions"><button class="ghost" id="toggleBonusBtn">Show bonus prompt</button></div>
+      <div class="bonus hidden" id="bonusBlock"><small>Bonus prompt</small><div id="bonusText"></div><textarea id="bonusAnswer" placeholder="Optional: one line is enough."></textarea></div>
+      <div class="actions">
+        <button class="ghost" id="backBtn">Back</button>
+        <button class="ghost" id="skipBtn">Skip for now</button>
+        <button class="primary" id="nextBtn" disabled>Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modalBackdrop" id="progressModal">
+    <div class="modal">
+      <div style="font-size:28px">🌿</div>
+      <h2>Final reflection complete</h2>
+      <div>Your final entry can be saved as <strong>“My Anchor Note”</strong> and revisited anytime in this browser.</div>
+      <div style="margin:10px 0 6px; font-weight:600;">How do I feel right now?</div>
+      <div class="movement">
+        <div class="chip" data-move="calm">🌫️ Calmer than before</div>
+        <div class="chip" data-move="grounded">🌥️ Grounded & aware</div>
+        <div class="chip" data-move="energized">🌤️ Clear & energized</div>
+      </div>
+      <div class="movementHint" id="movementHint">Select one to save.</div>
+      <div class="actions" style="margin-top:14px;">
+        <button class="ghost" id="saveAnchorBtn">Save as “My Anchor Note”</button>
+        <button class="ghost" id="downloadBtn">⬇ Download my responses</button>
+        <button class="primary" id="closeModal">Finish</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const steps = [
+    {id:'A', prompt:"Fresh eyes perspective — If someone looked at my work with fresh eyes, what would I want them to notice?",
+      tip:"Tip: Imagine a neutral observer. What signals of progress, honesty, or effort should stand out?",
+      keywordLabel:"Fresh eyes", keywordDef:"perspective without baggage — noticing what’s objectively present.",
+      example:"“That I moved from ideas to a weekly publishing rhythm.”",
+      bonus:"If a peer had to write a one-line review of my progress, what would I want it to say?"},
+
+    {id:'B', prompt:"Self-awareness first — Before that, what do I want to notice in myself first?",
+      tip:"Tip: Name inner qualities (intention, patience, courage) rather than outcomes.",
+      keywordLabel:"Self-awareness", keywordDef:"clear seeing of my inner state without judgment.",
+      example:"“I stayed with the discomfort and still showed up.”",
+      bonus:"What did I do that my past self would appreciate?"},
+
+    {id:'C', prompt:"Commitment to action — What is one movement I commit to owning next week?",
+      tip:"Tip: Make it concrete and ownable. Use a verb + scope + when.",
+      keywordLabel:"Movement", keywordDef:"the single step I will own next week.",
+      example:"“Draft 3 prompts by Tuesday 8pm.”",
+      bonus:"If I could only do a 10-minute version, what would it be?"},
+
+    {id:'D', prompt:"Positive insight — What new insight surprised or encouraged me during this reflection?",
+      tip:"Tip: Small insights count. Name what energised you.",
+      keywordLabel:"Insight", keywordDef:"new understanding that shifted energy or clarity.",
+      example:"“When I wrote it, I saw the real blocker was fear of feedback.”",
+      bonus:"Where else can this insight help me this month?"},
+
+    {id:'E', prompt:"Future anchor — If I read this journal 1 year later, what do I want future-me to remember from today?",
+      tip:"Tip: Write a brief note to future-you. What truth holds?",
+      keywordLabel:"Future anchor", keywordDef:"a short message to carry forward.",
+      example:"“You moved even when it felt small. That built trust.”",
+      bonus:"Add one promise I want future-me to hold me to."},
+
+    {id:'F', prompt:"Anchor word — What is one word that sums up my current state? (Any word is valid — even a small one can be a seed.)",
+      tip:"Tip: Go with the first word that feels true — don’t overthink.",
+      keywordLabel:"Anchor word", keywordDef:"a one-word handle for my state now.",
+      example:"“Steady” / “Gentle” / “Rise”",
+      bonus:"If this word had a 2-minute ritual, what would it be?"},
+
+    {id:'G', prompt:"Compassion anchor — What’s one strength I want to thank myself for showing in this process?",
+      tip:"Tip: Thank yourself like you would a friend.",
+      keywordLabel:"Compassion", keywordDef:"warm recognition of effort or quality.",
+      example:"“I kept showing up despite doubt.”",
+      bonus:"Write one sentence starting with: “Thank you for…”"},
+
+    {id:'H', prompt:"Micro next step — What is one tiny action I can start doing from tomorrow consistently, to honor this reflection?",
+      tip:"Tip: 2–10 minutes max. Consistency beats intensity.",
+      keywordLabel:"Micro step", keywordDef:"a tiny, repeatable action I can’t say no to.",
+      example:"“Write 3 bullets after breakfast.”",
+      bonus:"If tomorrow gets messy, what’s my 2-minute fallback?"}
+  ];
+
+  const titleScreen = document.getElementById('titleScreen');
+  const warmNudge = document.getElementById('warmNudge');
+  const screen = document.getElementById('screen');
+
+  const goWarmNudge = document.getElementById('goWarmNudge');
+  const startBtn = document.getElementById('startBtn');
+
+  const promptText = document.getElementById('promptText');
+  const tipLine = document.getElementById('tipLine');
+  const keywordLine = document.getElementById('keywordLine');
+  const exampleLine = document.getElementById('exampleLine');
+  const answer = document.getElementById('answer');
+
+  const toggleBonusBtn = document.getElementById('toggleBonusBtn');
+  const bonusBlock = document.getElementById('bonusBlock');
+  const bonusText = document.getElementById('bonusText');
+  const bonusAnswer = document.getElementById('bonusAnswer');
+
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+  const skipBtn = document.getElementById('skipBtn');
+
+  const progressModal = document.getElementById('progressModal');
+  const closeModal = document.getElementById('closeModal');
+  const movementHint = document.getElementById('movementHint');
+  const statusPill = document.getElementById('statusPill');
+  const toast = document.getElementById('toast');
+  const saveAnchorBtn = document.getElementById('saveAnchorBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  let idx = 0;
+  let saveTimer;
+
+  function keyFor(k){ return 'rj_s5_' + k; }
+  function setStatus(state){
+    statusPill.className = 'status ' + (navigator.onLine ? 'online' : 'offline') + (state==='saving'?' saving':' saved');
+    statusPill.textContent = (state==='saving' ? 'Saving…' : (navigator.onLine ? 'Saved ✓' : 'Offline — will sync'));
+  }
+  function showToast(msg){ toast.textContent = msg; toast.style.display='block'; setTimeout(()=>toast.style.display='none', 1500); }
+  function debounceSave(){ clearTimeout(saveTimer); setStatus('saving'); saveTimer=setTimeout(saveNow, 800); }
+  function saveNow(){
+    const s = steps[idx];
+    try{
+      const data = { answer: answer.value || '', bonus: bonusAnswer ? (bonusAnswer.value||'') : '', updated_at: Date.now() };
+      localStorage.setItem(keyFor(s.id), JSON.stringify(data));
+      setStatus('saved');
+    }catch(e){ showToast('Storage full. Please clear some space.'); }
+  }
+  function loadStep(i){
+    idx = Math.max(0, Math.min(i, steps.length-1));
+    const s = steps[idx];
+    promptText.textContent = s.prompt;
+    tipLine.textContent = s.tip;
+    keywordLine.innerHTML = '<em>' + s.keywordLabel + '</em> = ' + s.keywordDef;
+    exampleLine.innerHTML = '<strong>Example:</strong> ' + s.example;
+    bonusText.textContent = s.bonus;
+
+    const raw = localStorage.getItem(keyFor(s.id));
+    let data = {answer:'', bonus:''};
+    if(raw){ try{ data = JSON.parse(raw) }catch(e){} }
+    answer.value = data.answer || '';
+    if(bonusAnswer){ bonusAnswer.value = data.bonus || ''; }
+    nextBtn.disabled = (answer.value.trim().length === 0);
+  }
+
+  // Movement selector save
+  document.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    localStorage.setItem('rj_s5_mood', chip.dataset.move);
+    movementHint.textContent = 'Saved: ' + chip.textContent.trim();
+    showToast('Saved for your anchor.');
+  });
+
+  // Anchor Note snapshot
+  function collectAll(){
+    const all = {};
+    steps.forEach(s => {
+      const raw = localStorage.getItem(keyFor(s.id));
+      try{ all[s.id] = raw ? JSON.parse(raw) : {answer:'', bonus:''}; }catch(_){ all[s.id] = {answer:'', bonus:''}; }
+    });
+    return all;
+  }
+  function saveAnchor(){
+    const payload = { title:'My Anchor Note', saved_at:new Date().toISOString(), data:collectAll() };
+    localStorage.setItem('rj_s5_anchor_note', JSON.stringify(payload));
+    showToast('Saved “My Anchor Note”.');
+  }
+  saveAnchorBtn.addEventListener('click', saveAnchor);
+
+  // Download JSON of responses
+  downloadBtn.addEventListener('click', () => {
+    const responses = collectAll();
+    const blob = new Blob([JSON.stringify(responses, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "section5_final_reflection.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Downloaded responses.');
+  });
+
+  // Buttons
+  goWarmNudge.addEventListener('click', ()=>{ titleScreen.classList.add('hidden'); warmNudge.classList.remove('hidden'); });
+  startBtn.addEventListener('click', ()=>{ warmNudge.classList.add('hidden'); screen.classList.remove('hidden'); loadStep(0); });
+
+  toggleBonusBtn.addEventListener('click', ()=>{
+    const isHidden = bonusBlock.classList.contains('hidden');
+    bonusBlock.classList.toggle('hidden');
+    toggleBonusBtn.textContent = isHidden ? 'Hide bonus prompt' : 'Show bonus prompt';
+  });
+
+  answer.addEventListener('input', ()=>{ nextBtn.disabled = (answer.value.trim()===''); debounceSave(); });
+  if(bonusAnswer){ bonusAnswer.addEventListener('input', debounceSave); }
+
+  nextBtn.addEventListener('click', ()=>{ if(idx < steps.length-1){ loadStep(idx+1); } else { progressModal.style.display = 'flex'; }});
+  backBtn.addEventListener('click', ()=>{ if(idx>0){ loadStep(idx-1); } else { screen.classList.add('hidden'); warmNudge.classList.remove('hidden'); }});
+  skipBtn.addEventListener('click', ()=>{ if(idx < steps.length-1){ loadStep(idx+1); } else { progressModal.style.display = 'flex'; }});
+
+  closeModal.addEventListener('click', ()=>{ progressModal.style.display='none'; showToast('Saved ✓'); });
+
+  window.addEventListener('online', ()=> setStatus('saved'));
+  window.addEventListener('offline', ()=> setStatus('offline'));
+  setStatus('saved');
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Section 1 — Starting Reflection: Unlock myself</title>
+<style>
+  :root{ --bg:#0b1020; --surface:#101737; --card:#121a33; --text:#e9eef9; --muted:#a6b2d7; --accent:#7aa2ff; --border:#24346a; }
+  *{box-sizing:border-box}
+  body{ margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text);
+        background: radial-gradient(1200px 800px at 20% 0%, #111b3a 0%, var(--bg) 40%, #090e1a 100%);
+        min-height:100dvh; display:grid; place-items:center; padding:22px; }
+  .app{ width:min(900px,96vw) }
+  .header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .brand{ font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#cbd9ff; font-size:12px }
+  .status{ font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#0f1630; color:#b9c8ff }
+  .status.online.saving{ color:#ffe7a1; border-color:#4c4b1c } .status.online.saved{ color:#b7ffe8; border-color:#275b50 } .status.offline{ color:#ffe0a3; border-color:#6b5b1e }
+  .titlebar{ background:linear-gradient(180deg, rgba(255,255,255,.035), transparent 30%), var(--surface);
+             border:1px solid var(--border); border-radius:16px; padding:12px 16px; display:flex; align-items:center; gap:12px; }
+  .titlebar strong{ color:#dbe6ff }
+  .card{ background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), radial-gradient(800px 400px at 90% -10%, rgba(124, 58, 237,.12), transparent 40%), var(--card);
+         border:1px solid var(--border); border-radius:18px; padding:22px 18px; box-shadow:0 10px 30px rgba(0,0,0,.35) }
+  .center{ text-align:center }
+  .nudge{ margin:10px 0 12px; padding:12px; border-radius:12px; border:1px dashed var(--border); background:#0e1634; color:#a9b6e6; font-size:14px; }
+  .prompt{ font-size:18px; margin:0 0 10px; color:#eef2ff }
+  textarea{ width:100%; min-height:140px; resize:vertical; padding:12px; border-radius:12px; border:1px solid #2a3b79; background:#0d1530; color:#e9eef9; font-size:15px; line-height:1.5; }
+  .hint{ font-size:12px; color:#9bb1ff; margin:6px 0 2px }
+  .keyword, .example{ font-size:12px; color:#b5c7ff; margin:2px 0 }
+  .keyword em, .example em { font-style:normal; color:#d9e2ff }
+  .bonus{ margin-top:10px; padding:10px; border-radius:12px; background:#0f1630; border:1px solid #23346a; font-size:13px; color:#cfe0ff; }
+  .bonus small{ display:block; color:#9fb0ee; margin-bottom:6px }
+  .hidden{ display:none }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; justify-content:center }
+  button{ appearance:none; border:none; cursor:pointer; padding:10px 14px; border-radius:12px; font-weight:600; font-size:14px;
+          background:#111a3a; color:#dbe6ff; border:1px solid var(--border);
+          transition:transform .05s ease, background .2s ease, border-color .2s ease; }
+  button.primary{ background:linear-gradient(90deg, #3658ff, #7aa2ff); border-color:transparent; color:white }
+  button.ghost{ background:transparent; border:1px dashed #3550a8; color:#96a7e9 }
+  button:disabled{ opacity:.55; cursor:not-allowed }
+  .toast{ position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+          background:#0f1630; border:1px solid var(--border); color:#cfe0ff; padding:10px 14px; border-radius:12px; display:none; }
+  .modalBackdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal{ width:min(640px, 96vw); background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--card);
+          border:1px solid var(--border); border-radius:18px; padding:22px; }
+  .chip{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; border:1px solid #213064; cursor:pointer; background:#0e193b; color:#cfe0ff; }
+  .chip.active{ outline:2px solid #7aa2ff; background:#142459 }
+  .movementHint{ font-size:12px; color:#9fb0ee; margin-top:4px }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="brand">Reflection Journal</div>
+      <div class="titlebar"><strong>Section 1</strong></div>
+      <div class="status online saved" id="statusPill">Saved ✓</div>
+    </div>
+    <div class="card center" id="titleScreen">
+      <h1 style="margin:4px 0 6px;">Starting Reflection — Unlock myself</h1>
+      <p style="color:#a9b6e6;margin:0;">Map my start point: spark, barrier, and first move.</p>
+      <div class="actions"><button class="primary" id="goWarmNudge">Start →</button></div>
+    </div>
+    <div class="card hidden" id="warmNudge">
+      <div class="nudge">Keep it light; clarity beats perfection. This helps me move from confusion to clarity.</div>
+      <div class="actions"><button class="primary" id="startBtn">Continue →</button></div>
+    </div>
+    <div class="card hidden" id="screen">
+      <h1 class="prompt" id="promptText">Prompt</h1>
+      <textarea id="answer" placeholder="Type your reflection here..."></textarea>
+      <div class="hint" id="tipLine">Tip</div>
+      <div class="keyword" id="keywordLine"></div>
+      <div class="example" id="exampleLine"></div>
+      <div class="actions"><button class="ghost" id="toggleBonusBtn">Show bonus prompt</button></div>
+      <div class="bonus hidden" id="bonusBlock"><small>Bonus prompt</small><div id="bonusText"></div><textarea id="bonusAnswer" placeholder="Optional: one line is enough."></textarea></div>
+      <div class="actions">
+        <button class="ghost" id="backBtn">Back</button>
+        <button class="ghost" id="skipBtn">Skip for now</button>
+        <button class="primary" id="nextBtn" disabled>Next →</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="modalBackdrop" id="progressModal">
+    <div class="modal">
+      <div style="font-size:28px">🔓</div>
+      <h2>Starting reflection complete</h2>
+      <div>I’ve named my spark, a barrier, and a first move.</div>
+      <div style="margin:10px 0 6px; font-weight:600;">How do I feel my awareness level now?</div>
+      <div class="movement">
+        <div class="chip" data-move="confused">🌫️ I feel unclear</div>
+        <div class="chip" data-move="partial">🌥️ I sense some awareness</div>
+        <div class="chip" data-move="clear">🌤️ I feel clear and aware</div>
+      </div>
+      <div class="movementHint" id="movementHint">Select one to save for your final chart.</div>
+      <div class="actions" style="margin-top:14px;"><button class="primary" id="closeModal">Finish</button></div>
+    </div>
+  </div>
+  
+<script>
+(function(){
+  const steps = [
+  {id:'A',prompt:"What genuinely excites me about this cycle?",tip:"Tip: One line; name the piece that energizes me.",keywordLabel:"Excites",keywordDef:"the spark that pulls me forward.",example:"“Learning the new API so I can ship the onboarding flow.”",bonus:"What’s one tweak that would make this even more exciting?"},
+  {id:'B',prompt:"What is one barrier I can influence?",tip:"Tip: Pick something in my sphere; be specific.",keywordLabel:"Barrier",keywordDef:"the smallest obstacle I can shift.",example:"“Unclear success criteria — I’ll request a 15‑min alignment.”",bonus:"What 5‑minute move reduces this today?"},
+  {id:'C',prompt:"What tiny step will build momentum this week?",tip:"Tip: Verb + when. Keep it small and visible.",keywordLabel:"Momentum",keywordDef:"a small, visible step I can take now.",example:"“Block 25 minutes on Tuesday to outline v1.”",bonus:"What reminder will I set to support this?"}
+];
+
+  const titleScreen = document.getElementById('titleScreen');
+  const warmNudge = document.getElementById('warmNudge');
+  const screen = document.getElementById('screen');
+  
+
+  const goWarmNudge = document.getElementById('goWarmNudge');
+  const startBtn = document.getElementById('startBtn');
+
+  const promptText = document.getElementById('promptText');
+  const tipLine = document.getElementById('tipLine');
+  const keywordLine = document.getElementById('keywordLine');
+  const exampleLine = document.getElementById('exampleLine');
+  const answer = document.getElementById('answer');
+
+  const toggleBonusBtn = document.getElementById('toggleBonusBtn');
+  const bonusBlock = document.getElementById('bonusBlock');
+  const bonusText = document.getElementById('bonusText');
+  const bonusAnswer = document.getElementById('bonusAnswer');
+
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+  const skipBtn = document.getElementById('skipBtn');
+
+  const progressModal = document.getElementById('progressModal');
+  const closeModal = document.getElementById('closeModal');
+  const movementHint = document.getElementById('movementHint');
+  const statusPill = document.getElementById('statusPill');
+  const toast = document.getElementById('toast');
+
+  let idx = 0;
+  let saveTimer;
+
+  function keyFor(k){ return 'rj_s1_' + k; }
+  function setStatus(state){
+    statusPill.className = 'status ' + (navigator.onLine ? 'online' : 'offline') + (state==='saving'?' saving':' saved');
+    statusPill.textContent = (state==='saving' ? 'Saving…' : (navigator.onLine ? 'Saved ✓' : 'Offline — will sync'));
+  }
+  function showToast(msg){ toast.textContent = msg; toast.style.display='block'; setTimeout(()=>toast.style.display='none', 1500); }
+  function debounceSave(){ clearTimeout(saveTimer); setStatus('saving'); saveTimer=setTimeout(saveNow, 800); }
+  function saveNow(){
+    const s = steps[idx];
+    try{
+      const data = { answer: answer.value || '', bonus: bonusAnswer ? (bonusAnswer.value||'') : '', updated_at: Date.now() };
+      localStorage.setItem(keyFor(s.id), JSON.stringify(data));
+      setStatus('saved');
+    }catch(e){ showToast('Storage full. Please clear some space.'); }
+  }
+  function loadStep(i){
+    idx = Math.max(0, Math.min(i, steps.length-1));
+    const s = steps[idx];
+    promptText.textContent = s.prompt;
+    tipLine.textContent = s.tip;
+    keywordLine.innerHTML = '<em>' + s.keywordLabel + '</em> = ' + s.keywordDef;
+    exampleLine.innerHTML = '<strong>Example:</strong> ' + s.example;
+    bonusText.textContent = s.bonus;
+
+    const raw = localStorage.getItem(keyFor(s.id));
+    let data = {answer:'', bonus:''};
+    if(raw){ try{ data = JSON.parse(raw) }catch(e){} }
+    answer.value = data.answer || '';
+    if(bonusAnswer){ bonusAnswer.value = data.bonus || ''; }
+    nextBtn.disabled = (answer.value.trim().length === 0);
+  }
+
+  // Movement selector save
+  document.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    localStorage.setItem('rj_s1_movement', chip.dataset.move);
+    movementHint.textContent = 'Saved: ' + chip.textContent.trim();
+    showToast('Saved for final chart');
+  });
+
+  // Button wiring
+  document.getElementById('goWarmNudge').addEventListener('click', ()=>{
+    titleScreen.classList.add('hidden'); warmNudge.classList.remove('hidden');
+  });
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    warmNudge.classList.add('hidden'); screen.classList.remove('hidden'); loadStep(0);
+  });
+
+  document.getElementById('toggleBonusBtn').addEventListener('click', ()=>{
+    const isHidden = bonusBlock.classList.contains('hidden');
+    bonusBlock.classList.toggle('hidden');
+    document.getElementById('toggleBonusBtn').textContent = isHidden ? 'Hide bonus prompt' : 'Show bonus prompt';
+  });
+
+  answer.addEventListener('input', ()=>{ nextBtn.disabled = (answer.value.trim()===''); debounceSave(); });
+  if(bonusAnswer){ bonusAnswer.addEventListener('input', debounceSave); }
+
+  nextBtn.addEventListener('click', ()=>{
+    if(idx < steps.length-1){ loadStep(idx+1); }
+    else{ progressModal.style.display = 'flex'; }
+  });
+  backBtn.addEventListener('click', ()=>{
+    if(idx>0){ loadStep(idx-1); }
+    else { screen.classList.add('hidden'); warmNudge.classList.remove('hidden'); }
+  });
+  skipBtn.addEventListener('click', ()=>{
+    if(idx < steps.length-1){ loadStep(idx+1); }
+    else { progressModal.style.display = 'flex'; }
+  });
+
+  document.getElementById('closeModal').addEventListener('click', ()=>{
+    progressModal.style.display='none'; showToast('Saved ✓');
+  });
+
+  window.addEventListener('online', ()=> setStatus('saved'));
+  window.addEventListener('offline', ()=> setStatus('offline'));
+  setStatus('saved');
+})();
+</script>
+
+</body></html>

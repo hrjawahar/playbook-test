@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bold Leader’s Playbook – Prototype (Intro First)</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1a;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --accent1:#3b82f6;
+    --accent2:#10b981;
+    --accent3:#f59e0b;
+    --accent4:#8b5cf6;
+    --accent5:#ef4444;
+    --intro:#111827;
+    --radius:14px;
+  }
+  html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",Helvetica,sans-serif}
+  *{box-sizing:border-box}
+  .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+  .tab{padding:10px 14px;border:1px solid var(--line);border-bottom:none;border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);background:#fafafa;color:var(--ink);cursor:pointer;font-weight:600;transition:all .15s ease}
+  .tab[aria-selected="true"]{background:#fff}
+  .panel{display:none}
+  .panel.active{display:block}
+  .intro-card{border:1px solid var(--line);border-radius:18px;padding:28px;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+  .intro-title{font-size:28px;font-weight:900;margin:0 0 10px}
+  .intro-sub{font-size:18px;color:var(--muted);margin:0 0 18px}
+  .intro-body{white-space:pre-wrap;line-height:1.6;font-size:16px;color:#111827}
+  .intro-actions{display:flex;gap:10px;margin-top:18px}
+  .btn{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;font-weight:700}
+  .btn.primary{color:#fff;border:none}
+  .play-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:10px 0 18px}
+  .play-title{font-size:22px;font-weight:800;letter-spacing:.2px}
+  .accent-pill{padding:6px 10px;border-radius:999px;color:#fff;font-weight:700;font-size:12px;white-space:nowrap}
+  .plays-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .card{border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:#fff}
+  .card h4{margin:0 0 8px;font-size:16px}
+  .card p{margin:0 0 8px;color:var(--muted);line-height:1.5}
+  .example{padding:10px;border-left:3px solid currentColor;background:#f9fafb;border-radius:10px}
+  .screen-switch{display:flex;gap:8px;margin-bottom:12px}
+  .screen-btn{padding:8px 12px;border:1px solid var(--line);background:#f9fafb;border-radius:10px;cursor:pointer;font-weight:600}
+  .screen-btn[aria-pressed="true"]{background:#fff;border-color:currentColor}
+  .hbox{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:8px}
+  .hbox .box{border:1px solid var(--line);border-radius:var(--radius);padding:12px;background:#fff;min-height:120px}
+  .hbox .box h5{margin:0 0 6px;font-size:12px;letter-spacing:.2px;text-transform:uppercase;color:#6b7280}
+  .row{margin-bottom:14px}
+  .row.blank .box{background:#fcfcfd}
+  textarea{width:100%;min-height:96px;border:1px dashed var(--line);border-radius:10px;padding:10px;resize:vertical}
+  /* Embedded dropdown overlay inside textarea */
+  .textarea-wrap{position:relative}
+  /* Top-left trigger chip */
+  .embedded-trigger{
+    position:absolute;top:8px;left:8px;max-width:60%;
+    border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:#fff;
+    font-size:11px;font-weight:600;line-height:1.2;display:none;z-index:2;white-space:normal;word-break:break-word;
+  }
+  .textarea-wrap:focus-within .embedded-trigger{display:block}
+  .textarea-wrap.show .embedded-trigger{display:block}
+  /* Popover menu */
+  .embedded-popover{
+    position:absolute;top:40px;left:8px;min-width:240px;max-width:320px;
+    border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 8px 18px rgba(0,0,0,.1);
+    display:none;z-index:3;overflow:hidden;
+  }
+  .embedded-popover.show{display:block}
+  .embedded-popover button{
+    display:block;width:100%;text-align:left;border:0;background:#fff;padding:10px 12px;
+    font-size:13px;line-height:1.3;cursor:pointer;
+  }
+  .embedded-popover button:hover{background:#f3f4f6}
+
+  .reflection{margin-top:16px;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:#fff}
+  .reflection h4{margin:0 0 6px}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin:18px 0}
+  @media (max-width:960px){.plays-grid{grid-template-columns:1fr}.hbox{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='tabs' role='tablist' aria-label='Plays'>
+      <button class='tab' aria-selected='true' aria-controls='intro1'>Intro</button>
+      <button class='tab' aria-selected='false' aria-controls='intro2'>How to Use</button>
+      <button class='tab' aria-selected='false' aria-controls='p1'>Play 1</button>
+      <button class='tab' aria-selected='false' aria-controls='p2'>Play 2</button>
+      <button class='tab' aria-selected='false' aria-controls='p3'>Play 3</button>
+      <button class='tab' aria-selected='false' aria-controls='p4'>Play 4</button>
+      <button class='tab' aria-selected='false' aria-controls='p5'>Play 5</button>
+    </div>
+    <div id='panels'></div>
+  </div>
+
+<script>
+// --- Content ---
+const INTRO = [
+  {key:'intro1', title:'Bold Leaders Play Book', subtitle:'From Reflection to Movement', body:`Bold Leaders Play Book
+
+From Reflection to Movement
+
+The Reflections Journal helped you look inward, uncover hidden strengths, and reset how you think about potential. This Playbook takes you to the next step: turning reflection into move-ment.
+Movement is what builds relevance. In today’s workplace, potential alone does not secure your role. What matters is action that creates visible, credible impact.
+Each play in this book gives you a proven path: a hard truth, a core insight, step-by-step ac-tions, a practical template, and a reflection prompt to anchor the learning.
+One more hidden benefit: Every reflection and note you capture here becomes ready-made input for your growth journey. It will make your life far easier in performance and promotion conversations within your organization, and in career discussions during external interviews. On top of that, you’ll already have the raw material for updating your resume — without the daunting last-minute scramble.
+`, accent:'var(--intro)'},
+  {key:'intro2', title:'How to Use This Play', subtitle:'A quick guide to get results', body:`How to Use This Play:
+
+This book is designed as both a Reflections Journal and a Leader’s Playbook. It will work best if you use it in three ways:
+1. Read the Hard Truths & Core Insights
+Each Play begins with a hard truth and a core insight. These set the context. Take a moment to pause and see if the truth resonates with your own work life.
+2. Reflect & Respond
+You’ll find prompts, templates, and spaces for reflection. Write your responses honestly. Don’t worry about “getting it right” — the goal is clarity, not perfection.
+3. Apply & Revisit
+The Plays include action frameworks and annexure templates. Use them to turn reflections into action. Revisit your entries every 60–90 days to track how your role, credibility, and con-fidence are evolving.
+✨ Note on Reflections
+If nothing comes to mind immediately, that’s perfectly fine — pausing to think is part of the process.
+- Start small: recall a simple moment, like a teammate thanking you.
+- Use imagination: picture how it might look if this became true for you in the future.
+
+Reflection is progress, whether drawn from memory or vision.
+`, accent:'var(--intro)'}
+];
+
+const PLAYS = [
+  {key:'p1', accent:'var(--accent1)', title:'Play 1 — Build Credibility, Not Just Visibility', plays:[
+    {title:'Deliver with Proof', body:'Always tie outcomes to evidence (metrics, feedback, results).', example:'Cycle time reduced by 18% in 3 months.'},
+    {title:'Collect Peer Endorsements', body:'Capture recognition emails, chat notes, and testimonials.', example:'Store them in a Credibility File for reviews.'},
+    {title:'Track Small Wins', body:'Record weekly moments of value — don’t wait for big projects.', example:'Resolved escalation before downtime → saved 4 hours.'},
+    {title:'Close the Loop', body:'Communicate outcomes, not just activity.', example:'Training delivered to 12 team members; 90% reported readiness to apply skills immediately.'}
+  ],
+  hardTruth:`In today’s workplace, being visible is not enough. You can show up in meetings, share ideas, or post updates — but if none of it translates into evidence of value, you remain noticed, not believed.`,
+  coreInsight:`Credibility equals proof. Others should be able to point to your impact even when you’re not in the room. It is built through deliverables, evidence, and repeatable outcomes.`,
+  successPriming:`Think of one time when someone else quoted your impact in a meeting you weren’t part of. What made that possible? How can you replicate that proof more often?`,
+  successProtect:`If nothing comes to mind: pause, start small, or imagine a future example.`,
+  futureForward:`Close your eyes for a moment. Imagine this is already true in your daily work. What does it feel like? What shifts around you when others notice it?`,
+  takeaway:`Don’t just show up. Show proof. Visibility fades. Credibility compounds.`
+  },
+  {key:'p2', accent:'var(--accent2)', title:'Play 2 — Convert Ideas into Quantifiable Plans', plays:[
+    {title:'Run Ideas Through SMART', body:'Check each idea for Specific, Measurable, Actionable, Realistic, and Time-bound criteria.', example:'Example: Rewrite proposal to include explicit metric and due date.'},
+    {title:'Add Metrics and Deadlines', body:'Every plan must include at least one metric and a timeline.', example:'Launch new feature with 95% test coverage by Q3.'},
+    {title:'Share as a Plan, Not a Possibility', body:'Frame proposals as commitments.', example:'By Q2, we will automate 40% of test scripts to reduce regression cycle by 20%.'}
+  ],
+  hardTruth:`Ideas are cheap. Every workplace is flooded with them. What separates the bold leader? Turning ‘What if…’ into ‘Here’s how, by when, with what result.’`,
+  coreInsight:`An idea without numbers is a suggestion. A plan with numbers is leadership.`,
+  successPriming:`Think of a time when you turned an idea into a measurable plan. How did others respond differently compared to when you only shared ideas?`,
+  successProtect:`If nothing comes to mind: pause, start small, or imagine a future example.`,
+  futureForward:`Picture yourself six months from now, applying this play consistently. How do confidence, relevance, and recognition feel different?`,
+  takeaway:`Ideas don’t retain jobs. Executed plans do.`
+  },
+  {key:'p3', accent:'var(--accent3)', title:'Play 3 — Tell Stories with Numbers', plays:[
+    {title:'Choose the Right Metric', body:'Don’t flood people with data. Pick the one that shows impact.', example:'Our project reduced downtime by 22%, giving back 180 productive hours last quarter.'},
+    {title:'Wrap Numbers in Human Impact', body:'Link the data to real people or outcomes.', example:'Those 180 hours meant our support team could resolve 300 more tickets — customers noticed.'},
+    {title:'Create Before-and-After Contrast', body:'Frame the narrative with ‘Then → Now’.', example:'Six months ago, it took 5 days to close tickets. Today, it takes 2.'},
+    {title:'Use Visual Anchors', body:'Support your story with one simple chart, graph, or dashboard snapshot.', example:'One clean bar chart summarizing the shift.'}
+  ],
+  hardTruth:`Numbers on their own don’t inspire action. They overwhelm, bore, or get ignored. People remember stories — and when numbers are woven into a story, they remember and believe.`,
+  coreInsight:`A story backed by clean numbers is irresistible. Numbers give credibility. Story gives memory.`,
+  successPriming:`Think of a time when you used numbers to make your point and people actually remembered it. What was different about how you presented it?`,
+  successProtect:`If nothing comes to mind: pause, start small, or imagine a future example.`,
+  futureForward:`Picture yourself presenting to leadership. Your numbers land as a story — people quote you and carry your message forward. How does that feel?`,
+  takeaway:`Don’t just show numbers. Make them speak. Stories stick.`
+  },
+  {key:'p4', accent:'var(--accent4)', title:'Play 4 — Reset and Reshape Role Expectations', plays:[
+    {title:'Spot the Blind Spots', body:'Look for recurring pain points your role doesn’t officially cover.', example:'Noticing weekly reports confuse leadership → design a one-page dashboard.'},
+    {title:'Stretch Beyond the Obvious', body:'Take on one task outside your formal scope that adds value to the team.', example:'Facilitate retrospectives even if it’s not in your title.'},
+    {title:'Support Your Manager’s Agenda', body:'Ask: What’s on your plate that I could help with?', example:'Own a side project that frees your manager’s bandwidth.'},
+    {title:'Reframe the Narrative', body:'Describe your role not as what I do but as what I enable.', example:'I don’t just run sprints; I create flow that saves 20 hours monthly.'}
+  ],
+  hardTruth:`If you only do what’s written in your job description, you risk being boxed in. Roles are static, businesses are dynamic. Sticking to what’s expected keeps you safe — until safety turns into irrelevance.`,
+  coreInsight:`Leaders reshape roles instead of waiting for them to be redefined. Growth comes not from what the role requires, but from what you choose to add to it.`,
+  successPriming:`When was the last time you did something for the first time, outside your routine role, that added value to your manager or team?`,
+  successProtect:`If nothing comes to mind: pause, start small, or imagine a future example.`,
+  futureForward:`Picture yourself six months from now. Your role has stretched, your manager trusts you more, and peers see you shaping the team’s future. How does it feel?`,
+  takeaway:`Don’t just meet role requirements. Reset them. Growth begins where the job description ends.`
+  },
+  {key:'p5', accent:'var(--accent5)', title:'Play 5 — Reveal, Don’t Reinvent', plays:[
+    {title:'Map Your Hidden Assets', body:'Identify strengths you take for granted but others admire.', example:'Clear documentation peers rely on to avoid mistakes.'},
+    {title:'Connect Strengths to Business Needs', body:'Reframe strengths as direct value drivers.', example:'Because of documentation clarity, onboarding time dropped 30%.'},
+    {title:'Scale Small Wins', body:'If something worked once, package and repeat it.', example:'Turn one workshop into a recurring knowledge session.'},
+    {title:'Showcase, Don’t Shout', body:'Share results as stories that highlight revealed strengths.', example:'After adopting my checklist, error rate dropped 12%.'}
+  ],
+  hardTruth:`Chasing novelty is overrated. Reinvention without roots often looks shallow and is rarely sustainable.`,
+  coreInsight:`Relevance is not about being new, but about being true. Revealing hidden strengths and connecting them to business needs builds lasting credibility.`,
+  successPriming:`When did you last realize that something you thought was ordinary about you actually mattered to others?`,
+  successProtect:`If nothing comes to mind: pause, start small, or imagine a future example.`,
+  futureForward:`Picture yourself highlighting one strength in a team meeting. It lands, people lean in, and leadership sees revealed value. How does that shift confidence?`,
+  takeaway:`Stop chasing reinvention. Reveal what already sets you apart.`
+  },
+
+];
+
+
+// --- Helpers ---
+function el(tag, cls){const e=document.createElement(tag); if(cls) e.className=cls; return e}
+function colorizePanel(panel, accent){
+  panel.querySelectorAll('.screen-btn, .example').forEach(node=>{ node.style.color = accent; });
+  panel.querySelectorAll('.btn.primary').forEach(node=>{ node.style.color = '#ffffff'; });
+}
+function activateById(id){
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
+  tabs.forEach(t => t.setAttribute('aria-selected', t.getAttribute('aria-controls')===id ? 'true' : 'false'));
+  panels.forEach(p => p.classList.toggle('active', p.id === id));
+}
+
+// --- Renderers ---
+function renderIntro(intro){
+  const panel = el('section','panel');
+  panel.id = intro.key;
+  const card = el('div','intro-card');
+  const title = el('div','intro-title'); title.textContent = intro.title;
+  const sub = el('div','intro-sub'); sub.textContent = intro.subtitle;
+  const body = el('div','intro-body'); body.textContent = intro.body;
+  const actions = el('div','intro-actions');
+  const next = el('button','btn primary'); next.textContent='Continue'; next.style.background = intro.accent;
+  actions.appendChild(next);
+  card.append(title,sub,body,actions);
+  panel.appendChild(card);
+  document.getElementById('panels').appendChild(panel);
+  colorizePanel(panel, intro.accent);
+  next.addEventListener('click', ()=>{
+    // go to next tab
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const idx = tabs.findIndex(t => t.getAttribute('aria-controls') === intro.key);
+    const nextIdx = Math.min(idx+1, tabs.length-1);
+    activateById(tabs[nextIdx].getAttribute('aria-controls'));
+  });
+}
+
+function renderPlay(p, idx){
+  const panel = el('section','panel'); panel.id = `p${idx+1}`;
+  const header = el('div','play-header');
+  const title = el('div','play-title'); title.textContent = p.title;
+  const pill = el('div','accent-pill'); pill.textContent='Accent'; pill.style.background = p.accent;
+  header.append(title,pill);
+
+  const switcher = el('div','screen-switch');
+  const s1 = el('button','screen-btn'); s1.textContent='Screen 1: Plays to Build'; s1.setAttribute('aria-pressed','true');
+  const s2 = el('button','screen-btn'); s2.textContent='Screen 2: Reflect & Capture'; s2.setAttribute('aria-pressed','false');
+  switcher.append(s1,s2);
+
+  const s1Wrap = el('div');
+  const playsGrid = el('div','plays-grid');
+  p.plays.forEach(pl=>{
+    const card = el('div','card');
+    const h4 = el('h4'); h4.textContent = pl.title;
+    const b = el('p'); b.textContent = pl.body;
+    const ex = el('div','example'); ex.innerHTML = '<strong>Example:</strong> ' + pl.example;
+    card.append(h4,b,ex); playsGrid.appendChild(card);
+  });
+  s1Wrap.appendChild(playsGrid);
+
+  const row1 = el('div','row');
+  const h1 = el('div','hbox');
+  [
+    {label:'Hard truth (why this matters)', text:p.hardTruth},
+    {label:'Core insight (anchor the principles)', text:p.coreInsight},
+    {label:'Success priming (reflection)', text:p.successPriming + '\n\nProtection note (short): ' + p.successProtect},
+    {label:'Future forward (imagination)', text:p.futureForward},
+    {label:'Key takeaways', text:p.takeaway}
+  ].forEach(b=>{
+    const box = el('div','box');
+    const h5 = el('h5'); h5.textContent=b.label; const pt = el('p'); pt.textContent=b.text;
+    box.append(h5,pt); h1.appendChild(box);
+  });
+  row1.appendChild(h1);
+
+  const row2 = el('div','row blank');
+    const h2 = el('div','hbox');
+    ['Hard truth','Core insight','Success priming','Future forward','Key takeaways'].forEach(lbl=>{
+      const box = el('div','box');
+      const h5 = el('h5'); h5.textContent = lbl; box.appendChild(h5);
+      // Wrap textarea to overlay select inside without changing layout
+      const wrap = el('div','textarea-wrap');
+      const ta = document.createElement('textarea'); ta.setAttribute('aria-label', lbl + ' input');
+      wrap.appendChild(ta);
+      // Embedded popover only for Hard truth/Core insight
+      if (lbl === 'Hard truth' || lbl === 'Core insight') {
+        // Trigger chip (shows current selection or placeholder)
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'embedded-trigger';
+        trigger.textContent = 'Choose resonance ↧';
+        wrap.appendChild(trigger);
+
+        // Popover with three options
+        const pop = document.createElement('div');
+        pop.className = 'embedded-popover';
+        const mk = (value, text) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.dataset.value = value;
+          b.textContent = text;
+          return b;
+        };
+        const opt1 = mk('strong','Strongly resonates — seen in my work');
+        const opt2 = mk('partial','Partially resonates — relates in some areas');
+        const opt3 = mk('unsure','Not sure — will explore further');
+        pop.append(opt1,opt2,opt3);
+        wrap.appendChild(pop);
+
+        // Storage key
+        const panelId = panel.id;
+        const short = (lbl === 'Hard truth') ? 'hard' : 'core';
+        const key = `resonance_${panelId}_${short}`;
+
+        // Load saved value
+        try {
+          const saved = REVIEW_MODE ? null : localStorage.getItem(key);
+          if (saved) {
+            const map = {strong: opt1.textContent, partial: opt2.textContent, unsure: opt3.textContent};
+            trigger.textContent = map[saved] || 'Choose resonance ↧';
+            wrap.classList.add('show');
+          }
+        } catch(e){/* ignore */}
+
+        // Show popover
+        function openPop(){ pop.classList.add('show'); document.addEventListener('click', onDoc, {once:false}); }
+        function closePop(){ pop.classList.remove('show'); document.removeEventListener('click', onDoc, {once:false}); }
+        function onDoc(ev){ if(!pop.contains(ev.target) && ev.target!==trigger){ closePop(); } }
+
+        trigger.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          pop.classList.toggle('show');
+          if (pop.classList.contains('show')) document.addEventListener('click', onDoc, {once:false});
+        });
+
+        // Save selection
+        [opt1,opt2,opt3].forEach(btn=>btn.addEventListener('click', ()=>{
+          trigger.textContent = btn.textContent;
+          try { if(!REVIEW_MODE){ localStorage.setItem(key, btn.dataset.value); } } catch(e){}
+          wrap.classList.add('show');
+          closePop();
+        }));
+
+        // Show trigger on focus even with no selection
+        ta.addEventListener('focus', ()=> wrap.classList.add('show'));
+        ta.addEventListener('blur', ()=> { if (trigger.textContent==='Choose resonance ↧') wrap.classList.remove('show'); });
+      }
+      box.appendChild(wrap);
+      h2.appendChild(box);
+    });
+    row2.appendChild(h2);
+
+  const reflection = el('div','reflection');
+  const rh = el('h4'); rh.textContent='Reflection space'; const rta = document.createElement('textarea'); rta.placeholder='Write your broader reflections for this play…';
+  reflection.append(rh,rta);
+
+  const s2Block = el('div'); s2Block.append(row1,row2);
+
+  const nav = el('div','nav');
+  const back = el('button','btn primary'); back.textContent='Back to Screen 1'; back.style.background=p.accent;
+  const next = el('button','btn primary'); next.textContent='Go to Screen 2'; next.style.background=p.accent;
+  nav.append(back,next);
+
+  function showScreen(which){
+    const is1 = which===1;
+    s1.setAttribute('aria-pressed', is1?'true':'false');
+    s2.setAttribute('aria-pressed', !is1?'true':'false');
+    s1Wrap.style.display = is1? 'block':'none';
+    s2Block.style.display = !is1? 'block':'none';
+    back.style.display = is1? 'none':'inline-flex';
+    next.style.display = is1? 'inline-flex':'none';
+  }
+  s1.addEventListener('click', ()=>showScreen(1));
+  s2.addEventListener('click', ()=>showScreen(2));
+  next.addEventListener('click', ()=>showScreen(2));
+  back.addEventListener('click', ()=>showScreen(1));
+  showScreen(1);
+
+  panel.append(header,switcher,s1Wrap,s2Block,nav,reflection);
+  document.getElementById('panels').appendChild(panel);
+  colorizePanel(panel, p.accent);
+}
+
+// --- Boot ---
+// --- Clean Export Mode ---
+// Persistence is disabled in this build.
+const REVIEW_MODE = true;
+// No-op storage helpers
+function clearResonanceData(){};
+// Hard-disable localStorage usage in this scope
+try { window.localStorage = {getItem:()=>null,setItem:()=>{},removeItem:()=>{},key:()=>null,length:0}; } catch(e){};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Render intro panels
+  INTRO.forEach(renderIntro);
+  // Render plays
+  PLAYS.forEach((p, i)=>renderPlay(p, i));
+  // Make sure Intro is visible on first load
+  activateById('intro1');
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => activateById(tab.getAttribute('aria-controls')));
+  });
+});
+</script>
+
+</body>
+
+</html>
