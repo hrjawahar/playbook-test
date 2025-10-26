@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>21‑Day Affirmations — Simple AM/PM Checklist</title>
+<style>
+  :root{
+    --bg:#ffffff; --ink:#101114; --muted:#6b7280; --line:#e5e7eb; --accent:#0ea5e9;
+  }
+  [data-theme="dark"]{ --bg:#0b0b0c; --ink:#e9e9ee; --muted:#a4a8b3; --line:#2a2d36; }
+  html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;}
+  *{box-sizing:border-box}
+  .wrap{max-width:1024px;margin:28px auto;padding:0 16px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+  .title{font-weight:800;letter-spacing:.2px}
+  .note{font-size:13px;color:var(--muted)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-weight:700}
+  .btn.primary{background:var(--accent);color:#fff;border:none}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  th,td{border:1px solid var(--line);padding:8px;vertical-align:top;font-size:14px}
+  th{background:#f8fafc;text-align:left;font-weight:700}
+  td.affirm{font-weight:600}
+  .am, .pm{text-align:center;width:70px}
+  .date{width:170px}
+  .date .line{display:block;height:24px;border-bottom:1px solid var(--line)}
+  .legend{margin:8px 0 12px;font-size:13px;color:var(--muted)}
+  .mini{font-size:12px;color:var(--muted)}
+  @media print{
+    .actions,.legend{display:none}
+    .wrap{max-width:100%;margin:0;padding:0 8px}
+    th,td{font-size:12px;padding:6px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <div class="top">
+      <div>
+        <div class="title">21‑Day Affirmations — Simple AM/PM Checklist</div>
+        <div class="note">Aim: read all 21 lines in about 3 minutes, twice daily. Tick AM and PM, write the date to mark completion.</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="toggleTheme">Light/Dark</button>
+        <button class="btn" id="markAM">Mark All AM</button>
+        <button class="btn" id="markPM">Mark All PM</button>
+        <button class="btn" id="clearAll">Clear Checks</button>
+        <button class="btn primary" id="print">Print</button>
+      </div>
+    </div>
+
+    <div class="legend">Routine: Morning read → quick scan through all 21 and tick AM • Evening read (before bed) → quick scan and tick PM. Keep this page near your book to nudge you back to the source context.</div>
+
+    <table id="tbl" aria-label="21-Day Affirmations Checklist">
+      <thead>
+        <tr>
+          <th style="width:64px">Day</th>
+          <th>Affirmation</th>
+          <th class="am">AM</th>
+          <th class="pm">PM</th>
+          <th class="date">Date (write by hand)</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td>Day 1</td>
+          <td class="affirm">I see challenges as opportunities to learn.</td>
+          <td class="am"><input type="checkbox" data-k="d1:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d1:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 2</td>
+          <td class="affirm">I believe effort is what turns talent into strength.</td>
+          <td class="am"><input type="checkbox" data-k="d2:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d2:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 3</td>
+          <td class="affirm">I seek feedback even when it feels uncomfortable.</td>
+          <td class="am"><input type="checkbox" data-k="d3:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d3:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 4</td>
+          <td class="affirm">I get inspired by others’ success rather than threatened.</td>
+          <td class="am"><input type="checkbox" data-k="d4:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d4:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 5</td>
+          <td class="affirm">I try new approaches even if I may not succeed the first time.</td>
+          <td class="am"><input type="checkbox" data-k="d5:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d5:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 6</td>
+          <td class="affirm">I see setbacks as temporary, not permanent.</td>
+          <td class="am"><input type="checkbox" data-k="d6:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d6:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 7</td>
+          <td class="affirm">I focus on progress, not perfection.</td>
+          <td class="am"><input type="checkbox" data-k="d7:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d7:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 8</td>
+          <td class="affirm">I think of skills as things I can always expand.</td>
+          <td class="am"><input type="checkbox" data-k="d8:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d8:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 9</td>
+          <td class="affirm">I value learning more than proving I’m already good.</td>
+          <td class="am"><input type="checkbox" data-k="d9:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d9:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 10</td>
+          <td class="affirm">I avoid challenges, resist change, and believe my abilities are limited.</td>
+          <td class="am"><input type="checkbox" data-k="d10:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d10:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 11</td>
+          <td class="affirm">I sometimes try but often give up easily when faced with obstacles or criticism.</td>
+          <td class="am"><input type="checkbox" data-k="d11:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d11:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 12</td>
+          <td class="affirm">I make efforts to grow, though I still doubt my ability to fully improve.</td>
+          <td class="am"><input type="checkbox" data-k="d12:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d12:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 13</td>
+          <td class="affirm">I embrace challenges, value feedback, and believe effort helps me grow.</td>
+          <td class="am"><input type="checkbox" data-k="d13:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d13:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 14</td>
+          <td class="affirm">I consistently seek learning opportunities, turn setbacks into growth, and inspire others with a positive outlook.</td>
+          <td class="am"><input type="checkbox" data-k="d14:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d14:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 15</td>
+          <td class="affirm">I was known for writing solid backend code, but when I upskilled in API security and helped prevent a production issue, my relevance to the project doubled.</td>
+          <td class="am"><input type="checkbox" data-k="d15:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d15:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 16</td>
+          <td class="affirm">I kept solving technical issues in isolation. Now I proactively share fixes in team forums so others can learn. My relevance expanded beyond my immediate tasks.”</td>
+          <td class="am"><input type="checkbox" data-k="d16:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d16:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 17</td>
+          <td class="affirm">I used to conduct routine 1:1s. Now I ask future-focused questions like ‘what skills will make you valuable next year?’ This has made me a more relevant manager.”</td>
+          <td class="am"><input type="checkbox" data-k="d17:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d17:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 18</td>
+          <td class="affirm">I am somewhat relevant but need significant effort to stay aligned with today’s needs.</td>
+          <td class="am"><input type="checkbox" data-k="d18:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d18:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 19</td>
+          <td class="affirm">I am keeping pace, but I sometimes struggle to adapt or demonstrate my value.</td>
+          <td class="am"><input type="checkbox" data-k="d19:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d19:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 20</td>
+          <td class="affirm">I am largely relevant, adaptable, and contributing meaningfully to current demands.</td>
+          <td class="am"><input type="checkbox" data-k="d20:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d20:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+        <tr>
+          <td>Day 21</td>
+          <td class="affirm">I consistently stay ahead, update myself, and create impact that is future-ready.</td>
+          <td class="am"><input type="checkbox" data-k="d21:am" /></td>
+          <td class="pm"><input type="checkbox" data-k="d21:pm" /></td>
+          <td class="date"><span class="line" title="Write date here after printing."></span></td>
+        </tr>
+    
+      </tbody>
+    </table>
+
+    <div class="mini" id="progress" style="margin-top:8px"></div>
+  </div>
+
+<script>
+const KEY = "affirm_simple_am_pm_v1";
+function load(){ try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){return{}} }
+function save(s){ localStorage.setItem(KEY, JSON.stringify(s)); }
+let STATE = load();
+
+function sync(){
+  document.querySelectorAll('input[type="checkbox"][data-k]').forEach(cb=>{
+    const k = cb.getAttribute('data-k');
+    cb.checked = !!STATE[k];
+    cb.addEventListener('change', ()=>{ STATE[k]=cb.checked; save(STATE); updateProgress(); });
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const cbs = Array.from(document.querySelectorAll('input[type="checkbox"][data-k]'));
+  const total = cbs.length;
+  const done = cbs.filter(cb=>cb.checked).length;
+  const pct = total? Math.round(done/total*100) : 0;
+  document.getElementById('progress').textContent = done + " / " + total + " ticks (" + pct + "%)";
+}
+document.getElementById('markAM').addEventListener('click', ()=>{
+  for(let i=1;i<=21;i++){ STATE['d'+i+':am'] = true; }
+  save(STATE); sync();
+});
+document.getElementById('markPM').addEventListener('click', ()=>{
+  for(let i=1;i<=21;i++){ STATE['d'+i+':pm'] = true; }
+  save(STATE); sync();
+});
+document.getElementById('clearAll').addEventListener('click', ()=>{
+  if(!confirm('Clear all AM/PM ticks?')) return;
+  STATE = {}; save(STATE); sync();
+});
+document.getElementById('print').addEventListener('click', ()=>{ window.print(); });
+document.getElementById('toggleTheme').addEventListener('click', ()=>{
+  const app=document.getElementById('app'); const next=app.getAttribute('data-theme')==='dark'?'':'dark';
+  if(next){ app.setAttribute('data-theme','dark'); } else { app.removeAttribute('data-theme'); }
+  const s = load(); s.theme = next; STATE = s; save(STATE);
+});
+
+(function init(){
+  if((STATE.theme||'')==='dark'){ document.getElementById('app').setAttribute('data-theme','dark'); }
+  sync();
+})();
+</script>
+</body>
+</html>
